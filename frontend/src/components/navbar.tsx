@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import logoImg from "../assets/logo.png"; 
+// Ensure you have a logo image in assets
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +17,7 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="bg-purple-400 text-white p-4 flex justify-between items-center">
+      <nav className="bg-sky-50 text-white font-thin italic p-2 flex justify-between items-center">
         {/* Hamburger Button */}
         <button
             onClick={() => setIsOpen(!isOpen)}
@@ -33,7 +35,13 @@ const Navbar: React.FC = () => {
 
 
         {/* Logo */}
-        <h1 className="text-xl font-bold">My Website</h1>
+        <div className="flex-shrink-0">
+          <img 
+            src={logoImg} 
+            alt="Logo" 
+            className="h-15 w-auto" 
+          />
+        </div>
       </nav>
 
       {/* Overlay (click to close) */}
