@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import logoImg from "../assets/logo.png"; 
-// Ensure you have a logo image in assets
+import logoImg from "../assets/logo.png";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
-  // Optional: close sidebar with Esc key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsOpen(false);
@@ -17,90 +16,106 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Navbar */}
-      <nav className="bg-sky-50 text-white font-thin italic p-2 flex justify-between items-center">
-        {/* Hamburger Button */}
-        <button
+      <nav className="bg-gray-200 text-gray-800 font-thin italic p-2 flex items-center">
+        {/* LEFT: Hamburger */}
+        <div className="flex items-center">
+          <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
-            >
-            <svg className="w-6 h-6 text-gray-800 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isOpen ? (
+            aria-label="Toggle menu"
+            className="p-2 rounded-md hover:bg-gray-200 focus:outline-none"
+          >
+            <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
+              ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
+              )}
             </svg>
-        </button>
+          </button>
+        </div>
 
+        {/* CENTER: Links */}
+      
+        <div className="flex-1 flex justify-end">
+          {/* Search Bar */}
+          <div className="w-full max-w-md ">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search..."
+              className="w-full px-4 py-2 rounded-full bg-white border border-gray-300 focus:outline-none font-bold focus:ring-2 focus:ring-sky-400"
+            />
+          </div>
+          <div className="flex space-x-6 items-center text-lg text-black">
+            <a href="/" className="px-3 py-1 hover:underline font-sans ">Home</a>
+            <a href="#" className="px-3 py-1 hover:underline font-sans">About</a>
+            <a href="#" className="px-3 py-1 hover:underline font-sans">Login</a>
+          </div>
 
+          
+        </div>
 
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <img 
-            src={logoImg} 
-            alt="Logo" 
-            className="h-15 w-auto" 
-          />
+        {/* RIGHT: Logo */}
+        <div className="flex items-center ml-4">
+          <img src={logoImg} alt="Logo" className="h-10 w-auto" />
         </div>
       </nav>
 
-      {/* Overlay (click to close) */}
+      {/* Overlay (click to close sidebar) */}
       {isOpen && (
         <div
-            className="fixed inset-0 bg-transparent z-40"
-            onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-transparent z-40"
+          onClick={() => setIsOpen(false)}
         />
-     )}
-
+      )}
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-stone-100 shadow-2xl rounded-r-3xl text-black transform ${
+        className={`fixed top-0 left-0 h-full w-64 bg-slate-200 shadow-2xl rounded-r-3xl text-black transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform duration-300 z-50`}
       >
-        <div className="p-4" >
+        <div className="p-4">
           <h2 className="text-2xl font-bold mb-10">Menu</h2>
           <ul className="space-y-6">
             <li>
-                <a
-                href="#"
+              <a
+                href="/dress"
                 onClick={() => setIsOpen(false)}
-                className="block bg-white/20 hover:bg-white/40 text-white text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
-                >
-                Dashboard
-                </a>
+                className="block bg-gray-700/20 hover:bg-gray-700/40 text-gray-800 text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
+              >
+                Dress
+              </a>
             </li>
             <li>
-                <a
+              <a
                 href="#"
                 onClick={() => setIsOpen(false)}
-                className="block bg-white/20 hover:bg-white/40 text-white text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
-                >
+                className="block bg-gray-700/20 hover:bg-gray-700/40 text-gray-800 text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
+              >
                 Profile
-                </a>
+              </a>
             </li>
             <li>
-                <a
+              <a
                 href="#"
                 onClick={() => setIsOpen(false)}
-                className="block bg-white/20 hover:bg-white/40 text-white text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
-                >
+                className="block bg-gray-700/20 hover:bg-gray-700/40 text-gray-800 text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
+              >
                 Settings
-                </a>
+              </a>
             </li>
             <li>
-                <a
+              <a
                 href="#"
                 onClick={() => setIsOpen(false)}
-                className="block bg-white/20 hover:bg-white/40 text-white text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
-                >
+                className="block bg-gray-700/20 hover:bg-gray-700/40 text-gray-800 text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
+              >
                 Logout
-                </a>
+              </a>
             </li>
-        </ul>
-
-
+          </ul>
         </div>
       </div>
     </>
