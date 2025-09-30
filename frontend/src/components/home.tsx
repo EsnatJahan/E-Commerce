@@ -197,10 +197,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-6 text-center">
-        <p>&copy; 2024 CUET Hall Complaint Management System. All rights reserved.</p>
-      </footer>
     </div>
   );
 };

@@ -1,26 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import shop from "../assets/shop.png";
-import dressImg1 from "../assets/shoes.jpg";
-import dressImg2 from "../assets/purse.jpg";
-import dressImg3 from "../assets/makeups.jpg";
-import dressImg4 from "../assets/dresses.jpg";
+
+interface Product {
+  _id: string;
+  name: string;
+  brand: string;
+  price: string;
+  images: string[]; // Assuming multiple images
+}
 
 const Dress: React.FC = () => {
-
+  const [products, setProducts] = useState<Product[]>([]);
   const categories = ["Saree", "Shirt", "Jean", "Pant", "T-Shirt", "Panjabee", "Coat", "Suit"];
 
-  const products = [
-    { id: 1, name: "Floral Dress", brand: "Brand A", price: "$45", image: dressImg1 },
-    { id: 2, name: "Summer Shirt", brand: "Brand B", price: "$25", image: dressImg2 },
-    { id: 3, name: "Denim Jeans", brand: "Brand C", price: "$50", image: dressImg3 },
-    { id: 4, name: "Casual Pant", brand: "Brand D", price: "$30", image: dressImg4 },
-  ];
+  useEffect(() => {
+    // Fetch products from your API
+    const fetchProducts = async () => {
+      try {
+        const type = "Dress"; 
+        const res = await fetch(`http://localhost:3000/api/products/GetProduct?type=${type}`); // replace with your API endpoint
+        const data = await res.json();
+        console.log(data.length);
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div>
       {/* Header / Banner Section */}
       <div
-        className="m-[5%] mt-3 bg-gradient-to-br from-slate-300 via-indigo-100 to-slate-200 shadow-lg rounded-2xl overflow-hidden flex flex-col md:flex-row"
+        className="m-[5%] mt-3 bg-indigo-100 shadow-lg rounded-2xl overflow-hidden flex flex-col md:flex-row"
         style={{ minHeight: "37vh" }}
       >
         {/* Text Container */}
@@ -61,25 +76,24 @@ const Dress: React.FC = () => {
         {/* Right Column - Products */}
         <div className="md:w-3/4 grid grid-cols-1 sm:grid-cols-2 gap-6">
           {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-2xl shadow-lg p-4 flex flex-col justify-between"
-            >
-              {/* Product Image */}
-              <div className="h-48 w-full mb-4">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="h-full w-full object-cover rounded-xl"
-                />
+            <Link to={`/product/${product._id}`}>
+              <div className="bg-white rounded-2xl shadow-lg p-4 flex flex-col justify-between">
+                {/* Product Image */}
+                <div className="h-48 w-full mb-4">
+                  <img
+                    src={product.images[0]} // Show first image
+                    alt={product.name}
+                    className="h-full w-full object-cover rounded-xl"
+                  />
+                </div>
+                <h4 className="font-bold text-lg">{product.name}</h4>
+                <p className="text-gray-600">{product.brand}</p>
+                <p className="text-indigo-600 font-semibold">{product.price}</p>
+                <button className="mt-2 bg-red-500 text-white rounded-full px-4 py-1 hover:bg-red-600 transition-colors">
+                  ❤️ Love
+                </button>
               </div>
-              <h4 className="font-bold text-lg">{product.name}</h4>
-              <p className="text-gray-600">{product.brand}</p>
-              <p className="text-indigo-600 font-semibold">{product.price}</p>
-              <button className="mt-2 bg-red-500 text-white rounded-full px-4 py-1 hover:bg-red-600 transition-colors">
-                ❤️ Love
-              </button>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
