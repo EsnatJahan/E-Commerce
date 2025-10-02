@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logoImg from "../assets/logo.png";
+import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,22 @@ const Navbar: React.FC = () => {
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
+
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault(); // prevent default <a> behavior
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    window.location.href = "/"; // redirect to home
+  };
+
 
   return (
     <>
@@ -49,8 +66,16 @@ const Navbar: React.FC = () => {
           </div>
           <div className="flex space-x-6 items-center text-lg text-black">
             <a href="/" className="px-3 py-1 hover:underline font-sans ">Home</a>
-            <a href="#" className="px-3 py-1 hover:underline font-sans">About</a>
-            <a href="#" className="px-3 py-1 hover:underline font-sans">Login</a>
+            <a href="/signup" className="px-3 py-1 hover:underline font-sans">Sign Up</a>
+            {isLoggedIn ? (
+              <a href="/" onClick={handleLogout} className="hover:underline cursor-pointer">
+               Logout
+              </a>
+            ) : (
+              <Link to="/login" className="hover:underline">
+               Login
+              </Link>
+            )}
           </div>
 
           

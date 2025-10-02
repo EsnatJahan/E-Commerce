@@ -41,7 +41,7 @@ const Home: React.FC = () => {
 
 
   return (
-    <div className="font-sans text-gray-800">
+    <div className="font-sans text-gray-800  from-purple-300 via-pink-200 to-purple-100">
       {/* Product Card */}
       <section className="py-[4%]  mx-[5%]">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center bg-indigo-100 shadow-lg rounded-2xl overflow-hidden min-h-[10%]">

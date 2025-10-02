@@ -89,7 +89,7 @@ const Dress: React.FC = () => {
                 <h4 className="font-bold text-lg">{product.name}</h4>
                 <p className="text-gray-600">{product.brand}</p>
                 <p className="text-indigo-600 font-semibold">{product.price}</p>
-                <button className="mt-2 bg-red-500 text-white rounded-full px-4 py-1 hover:bg-red-600 transition-colors">
+                <button className="mt-2 bg-red-200 text-white rounded-full px-4 py-1 hover:bg-red-600 transition-colors">
                   ❤️ Love
                 </button>
               </div>

@@ -4,9 +4,11 @@ import express from 'express'
 //import itemModel from './models/item.js'
 import Category from './models/Category.js' 
 import Product from './models/products.js'
+import User from './models/users.js'
 import cors from 'cors'
 
 import productRoute from './routes/products.js'
+import userRoute from './routes/users.js'
 import connectToDatabase from './server.js'
 
 const app = express()
@@ -32,8 +34,18 @@ const initDB = async () => {
     ]);
     console.log("Sample categories inserted");
   }
-    const productCount = await Product.countDocuments();
-if (productCount === 0) {
+  // Admin User
+  const  userCount = await User.countDocuments();
+  if (userCount === 0) {
+    await User.create({
+      name: "Ena",
+      email: "ena@egmail.com",
+      password: "123456",
+      role: "admin"
+    });
+  }
+  const productCount = await Product.countDocuments();
+  if (productCount === 0) {
   // First product
   await Product.create({
     name: "Coat Set",
@@ -53,6 +65,7 @@ if (productCount === 0) {
       "/images/dress-collection/d4.jpg"
     ]
   });
+
 
   // Second product
   await Product.create({
@@ -83,6 +96,7 @@ initDB()
 
 connectToDatabase()
 app.use('/api/products', productRoute)
+app.use('/api/users', userRoute)
 
 app.listen(process.env.PORT,() =>{
     console.log(`app is running from port ${process.env.PORT}`)
