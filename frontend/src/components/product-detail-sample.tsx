@@ -23,13 +23,43 @@ const ProductDetail: React.FC = () => {
   const [mainImage, setMainImage] = useState<string>("");
   const [recommendations, setRecommendations] = useState<Product[]>([]);
 
+  // Fetch main product
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/api/products/GetProductDetail/${id}`);
+        const data = await res.json();
+        setProduct(data);
+        if (data.images && data.images.length > 0) setMainImage(data.images[0]);
+
+        // Fetch recommendations for same brand and type
+        if (data.brand && data.type) {
+          const recRes = await fetch(
+            `http://localhost:3000/api/products/GetProductofBrand?brand=${data.brand}&type=${data.type}`
+          );
+          const recData: Product[] = await recRes.json();
+          // Exclude current product from recommendations
+          const filtered = recData.filter((p) => p._id !== data._id);
+          setRecommendations(filtered);
+        }
+      } catch (err) {
+        console.error("Failed to fetch product", err);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (!product) {
+    return <h2 className="text-center mt-10">Loading product...</h2>;
+  }
+
+  // ✅ Fix #1: Use primitive types (boolean, string)
   const [Dialog, setDialog] = useState<{ open: boolean; message: string }>({
     open: false,
     message: ""
   });
 
-  
-  // Add to cart function
+  // // Add to cart function
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [formData, setFormData] = useState({
     address: "",
@@ -61,7 +91,7 @@ const ProductDetail: React.FC = () => {
     e.preventDefault();
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:3000/api/products/order", {
+      const res = await fetch("http://localhost:3000/api/products/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,42 +116,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-
-  // Fetch main product
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const res = await fetch(`http://localhost:3000/api/products/GetProductDetail/${id}`);
-        const data = await res.json();
-        setProduct(data);
-        if (data.images && data.images.length > 0) setMainImage(data.images[0]);
-
-        // Fetch recommendations for same brand and type
-        if (data.brand && data.type) {
-          const recRes = await fetch(
-            `http://localhost:3000/api/products/GetProductofBrand?brand=${data.brand}&type=${data.type}`
-          );
-          const recData: Product[] = await recRes.json();
-          // Exclude current product from recommendations
-          const filtered = recData.filter((p) => p._id !== data._id);
-          setRecommendations(filtered);
-        }
-      } catch (err) {
-        console.error("Failed to fetch product", err);
-      }
-    };
-    fetchProduct();
-  }, [id]);
-
-  if (!product) {
-    return <h2 className="text-center mt-10">Loading product...</h2>;
-  }
-
-
-
-
-
-   return (
+  return (
     <div className="max-w-6xl mx-auto mt-10 p-6 pb-2 bg-white shadow-lg rounded-2xl">
       {/* Grid for images & details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 h-[80%]">
@@ -288,114 +283,69 @@ const ProductDetail: React.FC = () => {
       )}
 
       {/*  */}
-  {checkoutOpen && (
-  <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center">
-    <div className="bg-purple-100 p-8 rounded-xl w-[500px] shadow-2xl">
-      <h2 className="text-2xl font-bold mb-6 text-center">Checkout</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Address */}
-        <input
-          type="text"
-          name="address"
-          placeholder="Address"
-          value={formData.address}
-          onChange={handleChange}
-          className="w-full border p-3 rounded-lg"
-          required
-        />
+      {checkoutOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl w-96 shadow-lg">
+            <h2 className="text-lg font-bold mb-4">Checkout</h2>
+            <form onSubmit={handleSubmit} className="space-y-3">
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+                required
+              />
+              <input
+                type="text"
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+                required
+              />
+              <input
+                type="number"
+                name="quantity"
+                placeholder="Quantity"
+                value={formData.quantity.toString()} 
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+                min={1}
+                required
+              />
+              <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                className="w-full border p-2 rounded"
+              >
+                <option value="cash_on_delivery">Cash on Delivery</option>
+                <option value="card">Credit/Debit Card</option>
+                <option value="bkash">bKash</option>
+              </select>
 
-        {/* Phone */}
-        <input
-          type="text"
-          name="phone"
-          placeholder="Phone Number"
-          value={formData.phone}
-          onChange={handleChange}
-          className="w-full border p-3 rounded-lg"
-          required
-        />
-
-        {/* Size */}
-        {product.sizes.length > 0 && (
-          <select
-            name="size"
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-            required
-          >
-            <option value="">Select Size</option>
-            {product.sizes.map((size, index) => (
-              <option key={index} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        )}
-
-        {/* Color */}
-        {product.colors.length > 0 && (
-          <select
-            name="color"
-            onChange={handleChange}
-            className="w-full border p-3 rounded-lg"
-            required
-          >
-            <option value="">Select Color</option>
-            {product.colors.map((color, index) => (
-              <option key={index} value={color}>
-                {color}
-              </option>
-            ))}
-          </select>
-        )}
-
-        {/* Quantity */}
-        <input
-          type="number"
-          name="quantity"
-          placeholder="Quantity"
-          value={formData.quantity.toString()}
-          onChange={handleChange}
-          className="w-full border p-3 rounded-lg"
-          min={1}
-          max={product.stock}
-          required
-        />
-
-        {/* Payment */}
-        <select
-          name="paymentMethod"
-          value={formData.paymentMethod}
-          onChange={handleChange}
-          className="w-full border p-3 rounded-lg"
-        >
-          <option value="cash_on_delivery">Cash on Delivery</option>
-          <option value="card">Credit/Debit Card</option>
-          <option value="bkash">bKash</option>
-        </select>
-
-        {/* Buttons */}
-        <div className="flex justify-between mt-6">
-          <button
-            type="button"
-            onClick={() => setCheckoutOpen(false)}
-            className="px-6 py-2 bg-gray-400 rounded-lg text-white"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-6 py-2 bg-green-600 rounded-lg text-white"
-          >
-            Place Order
-          </button>
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  onClick={() => setCheckoutOpen(false)}
+                  className="px-4 py-2 bg-gray-400 rounded text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-green-600 rounded text-white"
+                >
+                  Place Order
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-  )}
-
-
+      )}
 
       {/* Custom Dialog */}
       {Dialog.open && (

@@ -2,8 +2,10 @@
 import express from "express";
 import Product from "../models/products.js";
 import User from "../models/users.js";
+import Order from "../models/orders.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -114,6 +116,47 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+// Place an order
+router.post("/order", verifyToken, async (req, res) => {
+  try {
+    const { productId, address, phone, quantity, paymentMethod, size, color } = req.body;
+
+    // Find product
+    const product = await Product.findById(productId);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    // Check stock
+    if (quantity > product.stock) {
+      return res.status(400).json({ message: "Not enough stock available" });
+    }
+
+    // Create order
+    const order = new Order({
+      user: req.user.id,   // comes from verifyToken
+      product: productId,
+      address,
+      phone,
+      quantity,
+      paymentMethod,
+      size,
+      color
+    });
+
+    await order.save();
+
+    // Decrease stock
+    product.stock -= quantity;
+    await product.save();
+
+    res.status(201).json({ message: "Order placed successfully", order });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
