@@ -65,12 +65,15 @@ const Navbar: React.FC = () => {
             />
           </div>
           <div className="flex space-x-6 items-center text-lg text-black">
-            <a href="/" className="px-3 py-1 hover:underline font-sans ">Home</a>
+            <a href="/" className="px-3 py-1 hover:underline font-sans rounded-2xl bg-amber-50 ">Home</a>
             <a href="/signup" className="px-3 py-1 hover:underline font-sans">Sign Up</a>
             {isLoggedIn ? (
-              <a href="/" onClick={handleLogout} className="hover:underline cursor-pointer">
-               Logout
-              </a>
+              // <a href="/" onClick={handleLogout} className="hover:underline cursor-pointer">
+              //  Logout
+              // </a>
+              <Link to="/profile" className="hover:underline">
+               Profile
+              </Link>
             ) : (
               <Link to="/login" className="hover:underline">
                Login

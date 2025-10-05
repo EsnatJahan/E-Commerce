@@ -11,6 +11,7 @@ import ProductDetail from './components/productdetail.tsx';
 import Footer from './components/footer.tsx';
 import SignUp from './components/signup.tsx';
 import Login from './components/login.tsx';
+import Profile from './components/profile.tsx';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -24,6 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
     </BrowserRouter>

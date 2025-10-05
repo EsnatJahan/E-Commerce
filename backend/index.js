@@ -41,6 +41,8 @@ const initDB = async () => {
       name: "Ena",
       email: "ena@egmail.com",
       password: "123456",
+      address: "123 Admin St, City, Country",
+      phone: "123-456-7890",
       role: "admin"
     });
   }

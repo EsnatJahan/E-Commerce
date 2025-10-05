@@ -8,7 +8,9 @@ const SignUp: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
-  });
+    address: "",
+    phone: "",
+  }); 
 
   const [dialog, setDialog] = useState<{ open: boolean; message: string }>({
     open: false,
@@ -34,6 +36,8 @@ const SignUp: React.FC = () => {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
+          address: form.address,
+          phone: form.phone,
           password: form.password,
         }),
       });
@@ -104,6 +108,32 @@ const SignUp: React.FC = () => {
               className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Address
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={form.address}
+              onChange={handleChange}
+              required
+              className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              required
+              className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            />
+          </div>
 
           {/* Password */}
           <div>
@@ -119,6 +149,7 @@ const SignUp: React.FC = () => {
               className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:outline-none"
             />
           </div>
+          
 
           {/* Confirm Password */}
           <div>

@@ -21,7 +21,7 @@ const Dress: React.FC = () => {
         const type = "Dress"; 
         const res = await fetch(`http://localhost:3000/api/products/GetProduct?type=${type}`); // replace with your API endpoint
         const data = await res.json();
-        console.log(data.length);
+       // console.log(data.length);
         setProducts(data);
       } catch (err) {
         console.error("Failed to fetch products:", err);
