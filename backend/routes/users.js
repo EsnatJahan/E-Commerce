@@ -7,6 +7,8 @@ import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
+const image_override = (x) => `http://localhost:3000${x}`;
+
 // User Registration
 router.post("/signup", async (req, res) => {
    // console.log("Signup request received:", req.body);
@@ -101,6 +103,12 @@ router.get("/my-orders", verifyToken, async (req, res) => {
       status: order.status,
       createdAt: order.createdAt,
     }));
+      formattedOrders.forEach((order) => {    
+      if (order.productImage) {
+        order.productImage = image_override(order.productImage);
+      }
+
+    });
 
     res.status(200).json(formattedOrders);
   } catch (error) {

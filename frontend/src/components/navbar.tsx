@@ -118,11 +118,11 @@ const Navbar: React.FC = () => {
             </li>
             <li>
               <a
-                href="#"
+                href="/shoes"
                 onClick={() => setIsOpen(false)}
                 className="block bg-gray-700/20 hover:bg-gray-700/40 text-gray-800 text-lg font-bold px-6 py-4 rounded-xl shadow-md transition"
               >
-                Profile
+                Shoes
               </a>
             </li>
             <li>

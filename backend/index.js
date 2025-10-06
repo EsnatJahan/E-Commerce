@@ -6,7 +6,6 @@ import Category from './models/Category.js'
 import Product from './models/products.js'
 import User from './models/users.js'
 import cors from 'cors'
-
 import productRoute from './routes/products.js'
 import userRoute from './routes/users.js'
 import connectToDatabase from './server.js'
@@ -34,18 +33,7 @@ const initDB = async () => {
     ]);
     console.log("Sample categories inserted");
   }
-  // Admin User
-  const  userCount = await User.countDocuments();
-  if (userCount === 0) {
-    await User.create({
-      name: "Ena",
-      email: "ena@egmail.com",
-      password: "123456",
-      address: "123 Admin St, City, Country",
-      phone: "123-456-7890",
-      role: "admin"
-    });
-  }
+
   const productCount = await Product.countDocuments();
   if (productCount === 0) {
   // First product
@@ -99,6 +87,7 @@ initDB()
 connectToDatabase()
 app.use('/api/products', productRoute)
 app.use('/api/users', userRoute)
+app.use("/uploads", express.static("uploads"));
 
 app.listen(process.env.PORT,() =>{
     console.log(`app is running from port ${process.env.PORT}`)

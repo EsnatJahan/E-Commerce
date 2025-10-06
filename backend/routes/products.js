@@ -7,14 +7,21 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { verifyToken } from "../middleware/auth.js";
 
+import multer from "multer";
+import path from "path";
+
 const router = express.Router();
 
+const image_override = (x) => `http://localhost:3000${x}`;
 // Get all products OR by category
 router.get("/GetProduct", async (req, res) => {
-  const { category } = req.query; // category filter
+  const { type } = req.query; // category filter
   try {
-    const filter = category ? { category } : {};
+    const filter = type ? { type } : {};
     const products = await Product.find(filter);
+    products.forEach((product) => {
+      product.images = product.images.map(image_override);
+    });
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch products" });
@@ -27,6 +34,7 @@ router.get("/GetProductDetail/:id", async (req, res) => {
     if (!product) {
       return res.status(404).json({ error: "Product not found" });
     }
+    product.images = product.images.map(image_override);
     res.json(product);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch product" });
@@ -48,7 +56,9 @@ router.get("/GetProductofBrand", async (req, res) => {
     if (!products || products.length === 0) {
       return res.status(404).json({ error: "No products found" });
     }
-
+    products.forEach((product) => {
+      product.images = product.images.map(image_override);
+    });
     res.json(products);
   } catch (err) {
     console.error(err);
@@ -160,6 +170,107 @@ router.post("/order", verifyToken, async (req, res) => {
   }
 });
 
+/* 📦 GET all pending orders (admin only) */
+router.get("/pending", verifyToken, async (req, res) => {
+  try {
+    // ensure the requester is an admin
+    const currentUser = await User.findById(req.user.id).select("role");
+    if (!currentUser || currentUser.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    // find pending orders and populate user name + email from User model
+    const orders = await Order.find({ status: "pending" })
+      .populate("user", "name email _id") // populate only name & email
+      .populate("product", "name images type") 
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // map to the exact shape frontend expects:
+    console.log(orders.length);
+    console.log(orders[0]);
+    const formatted = orders.map((o) => ({
+      _id: o._id,
+      productName: o.product?.name,
+      productImage: o.product?.images?.[0],  // from Order
+      quantity: o.quantity,            // from Order
+      size: o.size,                    // from Order
+      color: o.color,                  // from Order
+      address: o.address,              // from Order
+      phone: o.phone,                  // from Order
+      type: o.product?.type,                    // from Order
+      status: o.status,                // from Order
+      createdAt: o.createdAt,    
+      paymentMethod: o.paymentMethod,      // from Order
+      userId: o.user?._id || null,   // populated User._id (or null)
+      userName: o.user?.name || null,// populated User.name
+      userEmail: o.user?.email || null // populated User.email
+    }));
+
+    return res.status(200).json(formatted);
+  } catch (error) {
+    console.error("Error fetching pending orders:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+
+// ✅ Ensure uploads folder exists
+import fs from "fs";
+const uploadDir = "uploads";
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+// ✅ Multer storage setup
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir); // save images in uploads folder
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueName + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+// ✅ Add product route
+router.post("/add-product", upload.array("images", 5), async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
+    }
+
+    // Image paths
+    const imageUrls = req.files.map((file) => `/uploads/${file.filename}`);
+
+    // Convert sizes/colors to arrays (if sent as multiple fields in FormData)
+    const sizes = Array.isArray(req.body.sizes) ? req.body.sizes : [req.body.sizes].filter(Boolean);
+    const colors = Array.isArray(req.body.colors) ? req.body.colors : [req.body.colors].filter(Boolean);
+
+    const newProduct = new Product({
+      name: req.body.name,
+      type: req.body.type,
+      category: req.body.category,
+      description: req.body.description,
+      brand: req.body.brand,
+      price: req.body.price,
+      discount: req.body.discount,
+      sizes,
+      colors,
+      stock: req.body.stock,
+      createdAt: req.body.createdAt,
+      images: imageUrls,
+    });
+
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  }
+});
 
 
 export default router;

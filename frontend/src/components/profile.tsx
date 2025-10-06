@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   role: "admin" | "user";
@@ -282,6 +283,7 @@ const ProfilePage: React.FC = () => {
       )}
 
       {/* Orders Table */}
+      {user && user.role === "user" && (
       <div className="max-w-6xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl shadow-lg border border-gray-100">
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           My Orders
@@ -362,6 +364,48 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
       </div>
+      )}
+      {user && user.role === "admin" && (
+        <div className="max-w-6xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl shadow-lg border border-gray-100 mb-8">
+          <h2 className="text-4xl font-bold mb-6 text-center text-gray-800">
+            Admin Panel
+          </h2>
+          {/* Admin panel content goes here */}
+          <div className="mb-4 max-w-[100%]"> 
+            {/* <button className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4">
+            Add Product
+           </button> */}
+            <a className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4"
+            href="/addproduct">
+              Add Product
+            </a>
+          </div>
+          <div className="mb-4 max-w-[100%]">
+            <a className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4"
+              href="/users">
+              Users Details
+            </a>
+          </div>
+          <div className="mb-4 max-w-[100%]">
+            {/* <button  onClick={() => navigate("/handleorders")}  className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4">
+            Pending Orders
+          </button> */}
+            <a
+              href="/handleorders"
+              className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4"
+            >
+              Pending Orders
+            </a>
+
+          </div>
+          <div className="mb-4 max-w-[100%]">
+            <a className="bg-indigo-500 text-white font-extrabold px-[12%] py-[1.2%] text-2xl rounded-xl hover:bg-sky-50 transition ml-4"
+              href="/allorders">
+              All Orders
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
